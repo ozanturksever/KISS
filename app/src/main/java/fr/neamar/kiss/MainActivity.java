@@ -64,6 +64,10 @@ import fr.neamar.kiss.utils.PackageManagerUtils;
 import fr.neamar.kiss.utils.Permission;
 import fr.neamar.kiss.utils.SystemUiVisibilityHelper;
 import fr.neamar.kiss.utils.TrimmingTextChangedListener;
+import fr.neamar.kiss.utils.DinkHealthChecker;
+import fr.neamar.kiss.dink.DinkConnectionState;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 
 public class MainActivity extends AppCompatActivity implements QueryInterface, KeyboardScrollHider.KeyboardHandler, View.OnTouchListener {
 
@@ -472,6 +476,9 @@ public class MainActivity extends AppCompatActivity implements QueryInterface, K
         //Set the intent so KISS can tell when it was launched as an assistant
         setIntent(intent);
 
+        // Handle pin shortcut requests (PWA, etc.) that arrive while activity is already running
+        forwarderManager.onNewIntent(intent);
+
         // This is called when the user press Home again while already browsing MainActivity
         // onResume() will be called right after, hiding the kissbar if any.
         // http://developer.android.com/reference/android/app/Activity.html#onNewIntent(android.content.Intent)
@@ -545,6 +552,9 @@ public class MainActivity extends AppCompatActivity implements QueryInterface, K
             return true;
         } else if (itemId == R.id.preferences) {
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (itemId == R.id.dink_health) {
+            showDinkHealth();
             return true;
         } else if (itemId == R.id.private_space) {
             switchPrivateSpaceState();
@@ -706,6 +716,53 @@ public class MainActivity extends AppCompatActivity implements QueryInterface, K
             }
         }
     }
+
+    @SuppressWarnings("deprecation")
+    private void showDinkHealth() {
+        ProgressDialog progress = new ProgressDialog(this);
+        progress.setMessage("Checking Dink server...");
+        progress.setCancelable(true);
+        progress.show();
+
+        DinkHealthChecker.checkHealth(this, new DinkHealthChecker.HealthCallback() {
+            @Override
+            public void onResult(String status, String version, String uptime, String checksFormatted) {
+                progress.dismiss();
+                if (isFinishing()) return;
+                StringBuilder message = new StringBuilder();
+                message.append("=== HTTP Health ===\n");
+                message.append("Status: ").append(status).append("\n");
+                message.append("Version: ").append(version).append("\n");
+                message.append("Uptime: ").append(uptime).append("\n");
+                if (!checksFormatted.isEmpty()) {
+                    message.append("\nChecks:\n").append(checksFormatted);
+                }
+                message.append("\n=== NATS Connection ===\n");
+                message.append(DinkConnectionState.getInstance().getFormattedStatus());
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Dink Server Health")
+                        .setMessage(message.toString())
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                progress.dismiss();
+                if (isFinishing()) return;
+                StringBuilder message = new StringBuilder();
+                message.append("HTTP Error: ").append(errorMessage).append("\n");
+                message.append("\n=== NATS Connection ===\n");
+                message.append(DinkConnectionState.getInstance().getFormattedStatus());
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Dink Server Health")
+                        .setMessage(message.toString())
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            }
+        });
+    }
+
 
     public void onFavoriteChange() {
         forwarderManager.onFavoriteChange();

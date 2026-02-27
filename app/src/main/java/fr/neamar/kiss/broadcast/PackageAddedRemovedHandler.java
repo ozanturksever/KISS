@@ -26,7 +26,10 @@ import fr.neamar.kiss.utils.UserHandle;
  */
 public class PackageAddedRemovedHandler extends BroadcastReceiver {
 
+    private static final String TAG = "PkgAddRemove";
+
     public static void handleEvent(@NonNull Context ctx, @Nullable String action, @NonNull String[] packageNames, @NonNull UserHandle user, boolean replacing) {
+        android.util.Log.d(TAG, "handleEvent action=" + action + " packages=" + java.util.Arrays.toString(packageNames) + " replacing=" + replacing);
         if (packageNames.length == 1 && packageNames[0].equalsIgnoreCase(ctx.getPackageName())) {
             // When running KISS locally, sending a new version of the APK immediately triggers a "package removed" for fr.neamar.kiss,
             // There is no need to handle this event.

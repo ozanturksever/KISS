@@ -58,6 +58,10 @@ public class ForwarderManager extends Forwarder {
         notificationForwarder.onPause();
     }
 
+    public void onNewIntent(Intent intent) {
+        shortcutsForwarder.onNewIntent(intent);
+    }
+
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         widgetsForwarder.onActivityResult(requestCode, resultCode, data);
     }
