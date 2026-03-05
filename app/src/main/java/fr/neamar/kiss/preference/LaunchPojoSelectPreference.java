@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import fr.neamar.kiss.DataHandler;
 import fr.neamar.kiss.KissApplication;
 import fr.neamar.kiss.pojo.AppPojo;
 import fr.neamar.kiss.pojo.NameComparator;
+import fr.neamar.kiss.pojo.Pojo;
+import fr.neamar.kiss.pojo.ShortcutPojo;
 
 public class LaunchPojoSelectPreference extends ListPreference {
     public LaunchPojoSelectPreference(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -37,27 +40,36 @@ public class LaunchPojoSelectPreference extends ListPreference {
     }
 
     private void setEntries() {
-        List<AppPojo> appPojoList = getDataHandler().getApplications();
-        if (appPojoList == null)
-            appPojoList = Collections.emptyList();
+        DataHandler dataHandler = getDataHandler();
 
-        // appPojoList is a copy of the original list; we can sort it in place
-        Collections.sort(appPojoList, new NameComparator());
+        List<Pojo> allPojos = new ArrayList<>();
+
+        List<AppPojo> appPojoList = dataHandler.getApplications();
+        if (appPojoList != null) {
+            allPojos.addAll(appPojoList);
+        }
+
+        List<ShortcutPojo> shortcutPojoList = dataHandler.getPinnedShortcuts();
+        if (shortcutPojoList != null) {
+            allPojos.addAll(shortcutPojoList);
+        }
+
+        Collections.sort(allPojos, new NameComparator());
 
         // generate entry names and entry values
-        final int appCount = appPojoList.size();
-        CharSequence[] entries = new CharSequence[appCount];
-        CharSequence[] entryValues = new CharSequence[appCount];
-        for (int idx = 0; idx < appCount; idx++) {
-            AppPojo appEntry = appPojoList.get(idx);
-            entries[idx] = appEntry.getName();
-            entryValues[idx] = appEntry.id;
+        final int count = allPojos.size();
+        CharSequence[] entries = new CharSequence[count];
+        CharSequence[] entryValues = new CharSequence[count];
+        for (int idx = 0; idx < count; idx++) {
+            Pojo entry = allPojos.get(idx);
+            entries[idx] = entry.getName();
+            entryValues[idx] = entry.id;
         }
 
         setEntries(entries);
         setEntryValues(entryValues);
 
-        setEnabled(!appPojoList.isEmpty());
+        setEnabled(!allPojos.isEmpty());
     }
 
     private DataHandler getDataHandler() {
