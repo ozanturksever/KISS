@@ -369,4 +369,10 @@
     <string name="result_highlighting_underline">Underline</string>
     <string name="result_highlighting_bold">Bold</string>
     <string name="result_highlighting_italic">Italic</string>
+    <string name="menu_dink_health">Dink Health</string>
+    <string name="dink_nats_channel_name">Dink Connection</string>
+    <string name="dink_nats_connected">Dink: Connected</string>
+    <string name="dink_nats_disconnected">Dink: Disconnected</string>
+    <string name="dink_nats_reconnecting">Dink: Reconnecting…</string>
+    <string name="dink_nats_connecting">Dink: Connecting…</string>
 </resources>

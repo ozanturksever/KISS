@@ -3,9 +3,14 @@ package fr.neamar.kiss;
 import android.app.Application;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
+import fr.neamar.kiss.dink.DinkNatsService;
 import fr.neamar.kiss.forwarder.InterfaceTweaks;
 import fr.neamar.kiss.utils.IconPackCache;
 
@@ -106,5 +111,12 @@ public class KissApplication extends Application {
     public void onCreate() {
         super.onCreate();
         InterfaceTweaks.setDefaultNightMode(this);
+
+        Intent natsIntent = new Intent(this, DinkNatsService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(natsIntent);
+        } else {
+            startService(natsIntent);
+        }
     }
 }

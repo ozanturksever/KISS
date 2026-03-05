@@ -19,6 +19,10 @@
         android:title="@string/menu_settings"
         app:showAsAction="never" />
     <item
+        android:id="@+id/dink_health"
+        android:title="@string/menu_dink_health"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/private_space"
         android:title="@string/menu_private_space"
         app:showAsAction="never" />

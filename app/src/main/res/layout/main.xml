@@ -6,12 +6,30 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/fatagnusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="FATAGNUS"
+        android:textSize="64sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="8"
+        android:paddingTop="40dp"
+        android:paddingBottom="16dp" />
+
     <LinearLayout
         android:id="@+id/widgetLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/resultLayout"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/fatagnusText"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
